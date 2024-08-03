@@ -1,6 +1,6 @@
 # pyacct
 
-Please install the required dependencies:
+This software is designed to run on Python 3.6. Please install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -11,6 +11,7 @@ You will also need to install the dependencies required by SQLAlchemy for your [
 Necessary environment variables:
 * `PYACCT_DATABASE_URL`: Set this to the URL of the database you'd like to connect to. This allows for details of the specific database to be removed from pyacct and left to you.
 
-Main docs references:
-* [FastAPI relationship basics](https://fastapi.tiangolo.com/tutorial/sql-databases/)
-* [Seperable APIs](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
+Main FastAPI docs referenced:
+* [SQL (Relational) Database](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+* [Bigger Applications](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
+* [Header Parameters](https://fastapi.tiangolo.com/tutorial/header-params/)

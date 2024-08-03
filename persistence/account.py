@@ -31,6 +31,15 @@ class AccountService:
         username = db.query(Username).filter(Username.id == account_id).first()
 
         return AccountRead(id=account.id, username=username.username)
+    
+    @staticmethod
+    def read_account_by_username(db: Session, username: str) -> AccountRead:
+        account = db.query(Username).filter(Username.username == username).first()
+
+        if account is None:
+            return None
+
+        return AccountRead(id=account.id, username=account.username)
 
     @staticmethod
     def update_username(db: Session, account_id: int, dto: UsernameDto) -> None:
