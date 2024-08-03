@@ -6,11 +6,11 @@ class IdDto(BaseModel):
 class UsernameDto(BaseModel):
     username: str
 
-class PasswordSet(BaseModel):
+class PasswordDto(BaseModel):
     password: str
     password_confirmation: str
 
-class AccountCreate(UsernameDto, PasswordSet):
+class AccountCreate(UsernameDto, PasswordDto):
     pass
 
 class AccountRead(UsernameDto, IdDto):
