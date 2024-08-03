@@ -17,4 +17,5 @@ class Password(Base):
     __tablename__ = "passwords"
 
     id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
+    salt = Column(String)
     password = Column(String)

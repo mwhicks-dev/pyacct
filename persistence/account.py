@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
+
 from model.account import Account, Username, Password
 from schema.account import AccountCreate, AccountRead, UsernameDto, PasswordDto
 from model.session import AccountSession, Session
+from util.password_hash import PasswordHash
 
 class AccountService:
 
     @staticmethod
     def create_account(db: Session, account: AccountCreate) -> None:
-        # TODO: HASH PASSWORD
-
         # generate ID
         db_account = Account()
         db.add(db_account)
@@ -17,7 +17,8 @@ class AccountService:
 
         # store username and password
         db_username = Username(id=db_account.id, username=account.username)
-        db_password = Password(id=db_account.id, password=account.password)
+        db_password = PasswordHash.hash_password(account.password)
+        db_password.id = db_account.id
         db.add(db_username)
         db.add(db_password)
         db.commit()
@@ -41,10 +42,10 @@ class AccountService:
 
     @staticmethod
     def update_password(db: Session, account_id: int, dto: PasswordDto) -> None:
-        # TODO: HASH PASSWORD
-
         password = db.query(Password).filter(Password.id == account_id).first()
-        password.password = dto.password
+        hashed_password = PasswordHash.hash_password(dto.password)
+        password.salt = hashed_password.salt
+        password.password = hashed_password.password
         db.commit()
 
         return
