@@ -30,21 +30,26 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=AccountRead)
 def read_account(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    return SessionService.read_session_bearer(db=db, session_id=token)
+    db_account = SessionService.read_session_bearer(db=db, session_id=token)
+    SessionService.update_session(db=db, session_id=token)
+    return db_account
 
 @router.put("/username")
 def update_username(dto: UsernameDto, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     _validate_username(dto)
     account = SessionService.read_session_bearer(db=db, session_id=token)
     AccountService.update_username(db=db, account_id=account.id, dto=dto)
+    SessionService.update_session(db=db, session_id=token)
 
 @router.put("/password")
 def update_password(dto: PasswordDto, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     _validate_password(dto)
     account = SessionService.read_session_bearer(db=db, session_id=token)
     AccountService.update_password(db=db, account_id=account.id, dto=dto)
+    SessionService.update_session(db=db, session_id=token)
 
 @router.delete("/")
 def delete_account(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     account = SessionService.read_session_bearer(db=db, session_id=token)
     AccountService.delete_account(db=db, account_id=account.id)
+    SessionService.update_session(db=db, session_id=token)
