@@ -24,14 +24,14 @@ def _validate_password(dto: PasswordDto, db: Session):
 
 def _validate_token(db: Session, token: str):
     if token is None or token == "":
-        _invalid_token()
-    valid = SessionService.is_token_valid(db=db, session_id=session_id)
+        _invalid_token(db=db)
+    valid = SessionService.is_token_valid(db=db, session_id=token)
     if valid == False:
-        _invalid_token()
-    SessionService.prune_sessions()
+        _invalid_token(db=db)
+    SessionService.prune_sessions(db=db)
 
-def _invalid_token():
-    SessionService.prune_sessions()
+def _invalid_token(db: Session):
+    SessionService.prune_sessions(db=db)
     raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/")
@@ -42,7 +42,6 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=AccountRead)
 def read_account(db: Session = Depends(get_db), token: str | None = Header(default=None)):
-    print(token)
     _validate_token(token=token, db=db)
     db_account = SessionService.read_session_bearer(db=db, session_id=token)
     SessionService.update_session(db=db, session_id=token)
@@ -68,5 +67,5 @@ def update_password(dto: PasswordDto, db: Session = Depends(get_db), token: str 
 def delete_account(db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
     account = SessionService.read_session_bearer(db=db, session_id=token)
+    SessionService.delete_sessions_by_account(db=db, account_id=account.id)
     AccountService.delete_account(db=db, account_id=account.id)
-    SessionService.update_session(db=db, session_id=token)
