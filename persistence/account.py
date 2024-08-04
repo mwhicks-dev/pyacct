@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SQLSession
 
 from model.account import Account, Username, Password
 from schema.account import AccountCreate, AccountRead, UsernameDto, PasswordDto
@@ -8,7 +8,7 @@ from util.password_hash import PasswordHash
 class AccountService:
 
     @staticmethod
-    def create_account(db: Session, account: AccountCreate) -> None:
+    def create_account(db: SQLSession, account: AccountCreate) -> None:
         # generate ID
         db_account = Account()
         db.add(db_account)
@@ -26,14 +26,14 @@ class AccountService:
         return
     
     @staticmethod
-    def read_account(db: Session, account_id: int) -> AccountRead:
+    def read_account(db: SQLSession, account_id: int) -> AccountRead:
         account = db.query(Account).filter(Account.id == account_id).first()
         username = db.query(Username).filter(Username.id == account_id).first()
 
         return AccountRead(id=account.id, username=username.username)
     
     @staticmethod
-    def read_account_by_username(db: Session, username: str) -> AccountRead:
+    def read_account_by_username(db: SQLSession, username: str) -> AccountRead:
         account = db.query(Username).filter(Username.username == username).first()
 
         if account is None:
@@ -42,11 +42,11 @@ class AccountService:
         return AccountRead(id=account.id, username=account.username)
     
     @staticmethod
-    def read_password(db: Session, account_id: int) -> Password:
+    def read_password(db: SQLSession, account_id: int) -> Password:
         return db.query(Password).filter(Password.id == account_id).first()
 
     @staticmethod
-    def update_username(db: Session, account_id: int, dto: UsernameDto) -> None:
+    def update_username(db: SQLSession, account_id: int, dto: UsernameDto) -> None:
         username = db.query(Username).filter(Username.id == account_id).first()
         username.username = dto.username
         db.commit()
@@ -54,7 +54,7 @@ class AccountService:
         return
 
     @staticmethod
-    def update_password(db: Session, account_id: int, dto: PasswordDto) -> None:
+    def update_password(db: SQLSession, account_id: int, dto: PasswordDto) -> None:
         password = db.query(Password).filter(Password.id == account_id).first()
         hashed_password = PasswordHash.hash_password(dto.password)
         password.salt = hashed_password.salt
@@ -64,7 +64,7 @@ class AccountService:
         return
     
     @staticmethod
-    def delete_account(db: Session, account_id: int) -> None:
+    def delete_account(db: SQLSession, account_id: int) -> None:
         session_id = db.query(AccountSession).filter(AccountSession.account_id == account_id).first()
         if session_id is not None:
             db.query(AccountSession).filter(AccountSession.session_id == session_id).delete()
