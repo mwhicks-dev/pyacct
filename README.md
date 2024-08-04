@@ -8,6 +8,11 @@ PyAcct is a lightweight software layer that provides an account and session mana
 * Installation
 * Quick Start
 * Usage
+* Known issues and limitations
+* Getting help
+* Contributing
+* License
+* Acknowledgements
 
 ## Introduction
 
@@ -100,6 +105,8 @@ python main.py
 ### Extension
 
 PyAcct has an API endpoint where you can retrieve the account ID from your auth token -- this is the main method of extension. These ID doesn't change unless the account is deleted, so you can use this as a unique ID/weakly-defined foreign key for tables in your own separate applications. See [service-oriented architecture](https://aws.amazon.com/what-is/service-oriented-architecture/).
+
+A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1).
 
 ## Known issues and limitations
 
