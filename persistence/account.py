@@ -40,6 +40,10 @@ class AccountService:
             return None
 
         return AccountRead(id=account.id, username=account.username)
+    
+    @staticmethod
+    def read_password(db: Session, account_id: int) -> Password:
+        return db.query(Password).filter(Password.id == account_id).first()
 
     @staticmethod
     def update_username(db: Session, account_id: int, dto: UsernameDto) -> None:
