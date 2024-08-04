@@ -3,10 +3,13 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session as SQLSession
 
+from util.token_validation import ITokenValidation
 from schema.session import SessionDto
 from schema.account import AccountRead
 from model.session import Session, AccountSession
 from model.account import Account, Username
+
+token_validation: ITokenValidation = None
 
 class SessionService:
 
@@ -49,3 +52,13 @@ class SessionService:
         db.query(Session).filter(Session.id == session_id).delete()
 
         return
+
+    @staticmethod
+    def is_token_valid(db: SQLSession, session_id: UUID) -> bool:
+        db_session = db.query(Session).filter(Session.id == session_id)
+        valid = token_validation.is_token_valid(db_session)
+
+        if valid == False:
+            SessionService.delete_session(db=db, session_id=session_id)
+
+        return valid
