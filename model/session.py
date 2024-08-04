@@ -16,4 +16,4 @@ class AccountSession(Base):
     account_id = Column(Integer, ForeignKey("accounts.id"))
 
     # ref: https://stackoverflow.com/questions/10059345/sqlalchemy-unique-across-multiple-columns
-    __table_args__ = (PrimaryKeyConstraint("session_id", "account_id"))
+    __table_args__ = (PrimaryKeyConstraint("session_id", "account_id"), )
