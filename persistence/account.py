@@ -65,10 +65,7 @@ class AccountService:
     
     @staticmethod
     def delete_account(db: SQLSession, account_id: int) -> None:
-        session_id = db.query(AccountSession).filter(AccountSession.account_id == account_id).first()
-        if session_id is not None:
-            db.query(AccountSession).filter(AccountSession.session_id == session_id).delete()
-            db.query(Session).filter(Session.id == session_id).delete()
-        db.query(Username).filter_by(Username.id == account_id).delete()
-        db.query(Password).filter_by(Password.id == account_id).delete()
-        db.query(Account).filter_by(Account.id == account_id).delete()
+        db.query(Username).filter(Username.id == account_id).delete()
+        db.query(Password).filter(Password.id == account_id).delete()
+        db.query(Account).filter(Account.id == account_id).delete()
+        db.commit()

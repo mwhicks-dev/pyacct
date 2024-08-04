@@ -60,4 +60,19 @@ class SessionService:
 
     @staticmethod
     def prune_sessions(db: SQLSession) -> None:
-        db.query(Session).filter(SessionService.is_token_valid(db=db, session_id=Session.id) == False).delete()
+        now = datetime.now()
+        created = now - timedelta(days=1)
+        used = now - timedelta(hours=1)
+        db_sessions = (db.query(Session).filter(Session.created_time < created).all()
+            + db.query(Session).filter(Session.used_time < used).all())
+        for session in db_sessions:
+            SessionService.delete_session(db=db, session_id=session.id)
+    
+    @staticmethod
+    def delete_sessions_by_account(db: SQLSession, account_id: int) -> None:
+        db_account_sessions = db.query(AccountSession).filter(AccountSession.account_id == account_id).all()
+        for db_account_session in db_account_sessions:
+            db.query(AccountSession).filter(AccountSession.session_id == db_account_session.session_id).delete()
+            db.query(Session).filter(Session.id == db_account_session.session_id).delete()
+        print(len(db.query(AccountSession).filter(AccountSession.account_id == account_id).all()))
+        db.commit()
