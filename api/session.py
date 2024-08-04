@@ -1,5 +1,3 @@
-from typing_extensions import Annotated
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session as SQLSession
@@ -20,7 +18,7 @@ def create_session(dto: SessionCreate, db: SQLSession = Depends(get_db)):
     db_account = AccountService.read_account_by_username(db=db, username=dto.username)
     if db_account is None:
         _bad_credentials()
-    challenge = AccountService.read_password(db_account.id)
+    challenge = AccountService.read_password(db=db, account_id=db_account.id)
     if challenge is None:
         _bad_credentials()
     

@@ -55,5 +55,5 @@ class SessionService:
 
     @staticmethod
     def is_token_valid(db: SQLSession, session_id: UUID) -> bool:
-        db_session = db.query(Session).filter(Session.id == session_id)
+        db_session = db.query(Session).filter(Session.id == session_id).first()
         return token_validation.is_token_valid(db_session)
