@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy import Column, ForeignKey, Uuid, DateTime, Integer, PrimaryKeyConstraint
 
 from persistence.database import Base
@@ -5,7 +7,7 @@ from persistence.database import Base
 class Session(Base):
     __tablename__ = "sessions"
 
-    id = Column(Uuid, primary_key=True)
+    id = Column(Uuid, primary_key=True, default=uuid4)
     created_time = Column(DateTime)
     used_time = Column(DateTime)
 
