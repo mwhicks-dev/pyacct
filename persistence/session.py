@@ -56,9 +56,4 @@ class SessionService:
     @staticmethod
     def is_token_valid(db: SQLSession, session_id: UUID) -> bool:
         db_session = db.query(Session).filter(Session.id == session_id)
-        valid = token_validation.is_token_valid(db_session)
-
-        if valid == False:
-            SessionService.delete_session(db=db, session_id=session_id)
-
-        return valid
+        return token_validation.is_token_valid(db_session)

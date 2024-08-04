@@ -25,8 +25,10 @@ def _validate_password(dto: PasswordDto, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Passwords must match")
 
 def _validate_token(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    valid = SessionService.is_token_valid(db=db, session_id=UUID(token))
+    session_id = UUID(token)
+    valid = SessionService.is_token_valid(db=db, session_id=session_id)
     if valid == False:
+        SessionService.delete_session(db=db, session_id=session_id)
         raise HTTPException(status_code=401, detail="Invalid token; session closed")
 
 @router.post("/")
