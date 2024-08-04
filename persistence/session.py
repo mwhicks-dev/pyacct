@@ -1,5 +1,5 @@
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session as SQLSession
 
@@ -57,3 +57,7 @@ class SessionService:
     def is_token_valid(db: SQLSession, session_id: UUID) -> bool:
         db_session = db.query(Session).filter(Session.id == session_id).first()
         return token_validation.is_token_valid(db_session)
+
+    @staticmethod
+    def prune_sessions(db: SQLSession) -> None:
+        db.query(Session).filter(SessionService.is_token_valid(db=db, session_id=Session.id) == False).delete()

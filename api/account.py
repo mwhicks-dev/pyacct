@@ -23,15 +23,15 @@ def _validate_password(dto: PasswordDto, db: Session):
         raise HTTPException(status_code=400, detail="Passwords must match")
 
 def _validate_token(db: Session, token: str):
-    if token is None:
+    if token is None or token == "":
         _invalid_token()
-    session_id = UUID(f"{{{token}}}")
     valid = SessionService.is_token_valid(db=db, session_id=session_id)
     if valid == False:
-        SessionService.delete_session(db=db, session_id=session_id)
         _invalid_token()
+    SessionService.prune_sessions()
 
 def _invalid_token():
+    SessionService.prune_sessions()
     raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/")
