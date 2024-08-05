@@ -4,15 +4,15 @@ PyAcct is a lightweight software layer that provides an account and session mana
 
 ## Table of Contents
 
-* Introduction
-* Installation
-* Quick Start
-* Usage
-* Known issues and limitations
-* Getting help
-* Contributing
-* License
-* Acknowledgements
+* [Introduction](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#introduction)
+* [Installation](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#installation)
+* [Quick start](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#quick-start)
+* [Usage](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#usage)
+* [Known issues and limitations](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#known-issues-and-limitations)
+* [Getting help](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#getting-help)
+* [Contributing](https://github.com/mwhicks-dev/pyacct/tree/dev?tab=readme-ov-file#contributing)
+* [License](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#license)
+* [Acknowledgements](https://github.com/mwhicks-dev/pyacct/?tab=readme-ov-file#acknowledgements)
 
 ## Introduction
 
