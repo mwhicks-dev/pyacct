@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyacct"
+version = "1.1.0"
+authors = [
+  { name="Mason", email="mason@hicksm.dev" },
+]
+description = "Python API components used for keeping track of end user accounts."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "fastapi >= 0.112.0",
+  "pydantic >= 2.8.2",
+  "SQLAlchemy >= 2.0.31"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pyacct*"]
+
+[project.urls]
+Homepage = "https://github.com/mwhicks-dev/pyacct"
+Issues = "https://github.com/mwhicks-dev/pyacct/issues"

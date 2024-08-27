@@ -32,6 +32,10 @@ pip install -r requirements.txt
 
 and then, install the driver required by SQLAlchemy for your [dialect](https://docs.sqlalchemy.org/en/13/dialects/) of choice. **This part is important -- SQLAlchemy cannot connect to your database without these being implemented.**
 
+### Build to Package
+
+If you only want to build PyAcct to a package for use in other sofware, just install `setuptools` and run `python -m build`.
+
 ## Quick start
 
 PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable. Before running, please assign `PYACCT_DATABASE_URL` in the form:
@@ -49,7 +53,7 @@ export PYACCT_DATABASE_URL="dialect+driver://username:password@host:port/databas
 Once completed, you can run the PyAcct layer using the following command:
 
 ```bash
-python main.py
+python src/pyacct/main.py
 ```
 
 See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1) for access information.
@@ -99,7 +103,7 @@ The default validator will deem tokens invalid after they have been unused for a
 Once all of the prerequisites and configuration are satisfied, you can simply run PyAcct with the following command:
 
 ```bash
-python main.py
+python src/pyacct/main.py
 ```
 
 ### Extension
