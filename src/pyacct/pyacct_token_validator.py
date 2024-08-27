@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from model.session import Session
-from util.token_validation import ITokenValidation
+from util import ITokenValidation
 
 created_limit: int = 24 * 60 * 60
 used_limit: int = 60 * 60
