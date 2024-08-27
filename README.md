@@ -32,6 +32,8 @@ pip install -r requirements.txt
 
 and then, install the driver required by SQLAlchemy for your [dialect](https://docs.sqlalchemy.org/en/13/dialects/) of choice. **This part is important -- SQLAlchemy cannot connect to your database without these being implemented.**
 
+Docker deployment options available in Usage.
+
 ### Build to Package
 
 If you only want to build PyAcct to a package for use in other sofware, just install `setuptools` and run `python -m build`.
@@ -60,7 +62,7 @@ See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1
 
 ## Usage
 
-The usage is broken into five sections: Prerequisites, Environment Variables, Strategy, Deployment and Extension.
+The usage is broken into five sections: Prerequisites, Environment Variables, Strategy, Deployment and Extension. Following this is the condensed Docker Usage subsection.
 
 ### Prerequisites
 
@@ -111,6 +113,36 @@ python src/pyacct/main.py
 PyAcct has an API endpoint where you can retrieve the account ID from your auth token -- this is the main method of extension. These ID doesn't change unless the account is deleted, so you can use this as a unique ID/weakly-defined foreign key for tables in your own separate applications. See [service-oriented architecture](https://aws.amazon.com/what-is/service-oriented-architecture/).
 
 A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1).
+
+### Docker Usage
+
+If you are not yet familiar with anything covered, please read the above subsections before this one.
+
+You can use the Dockerfile to build and run this service. Before building, you will need to verify or modify the following arguments:
+* `TARGET`: This will be the branch (or tag) you would like to build to your Docker image (for instance, v1.1.1 or dev). If not modified, this argument defaults to `main`.
+* `DRIVER`: This will be the installed SQLAlchemy driver for your database type. If not modified, this argument defaults to `psycopg2`.
+
+Afterwards, in order to build, execute:
+
+```bash
+docker build --no-cache -t pyacct --build-arg TARGET={your-target} --build-arg DRIVER={your-driver} .
+```
+
+or
+
+```bash
+docker build --no-cache -t pyacct .
+```
+
+Use of the `--no-cache` flag is recommended for non-release branches, as Docker will not consider that its fetch of `pyacct` may change over time.
+
+Once successfully built, you can run your Docker image by:
+
+```bash
+docker run --rm -e PYACCT_DATABASE_URL={your-database-url} -p {host-pyacct-port}:8000 pyacct
+```
+
+You can detach this process using `-d` if you would like, but testing first without is recommended. If successful, you should be able to access PyAcct via `localhost:{host-pyacct-port}` or remotely through your public IP address `hostaddr` and the port. Try `localhost:{host-pyacct-port}/docs` (or `hostaddr`) to test.
 
 ## Known issues and limitations
 
