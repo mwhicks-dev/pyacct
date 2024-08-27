@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session as SQLSession
 
 from model import Account, Username, Password, AccountSession, Session
 from schema import AccountCreate, AccountRead, UsernameDto, PasswordDto
-from util.password_hash import PasswordHash
+from util import PasswordHash
 
 class AccountService:
 

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session as SQLSession
 
-from util.password_hash import PasswordHash
-from schema import SessionCreate, SessionDto
+from util import PasswordHash
+from schema import SessionCreate
 from persistence.account import AccountService
 from persistence.session import SessionService
-from api.api import API_PREFIX, get_db
+from api import API_PREFIX, get_db
 
 router = APIRouter(
     prefix=f"{API_PREFIX}/session"

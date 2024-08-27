@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session as SQLSession
 
-from util.token_validation import ITokenValidation
+from util import ITokenValidation
 from schema import SessionDto, AccountRead
 from model import Session, AccountSession, Account, Username
 
