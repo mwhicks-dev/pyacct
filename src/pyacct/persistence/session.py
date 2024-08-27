@@ -4,10 +4,8 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session as SQLSession
 
 from util.token_validation import ITokenValidation
-from schema.session import SessionDto
-from schema.account import AccountRead
-from model.session import Session, AccountSession
-from model.account import Account, Username
+from schema import SessionDto, AccountRead
+from model import Session, AccountSession, Account, Username
 
 token_validation: ITokenValidation = None
 
