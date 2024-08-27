@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session as SQLSession
 
 from util.password_hash import PasswordHash
-from schema.session import SessionCreate, SessionDto
+from schema import SessionCreate, SessionDto
 from persistence.account import AccountService
 from persistence.session import SessionService
 from api.api import API_PREFIX, get_db

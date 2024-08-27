@@ -4,7 +4,7 @@ from fastapi import APIRouter, Header, Depends, HTTPException
 
 from sqlalchemy.orm import Session
 
-from schema.account import AccountCreate, AccountRead, UsernameDto, PasswordDto
+from schema import AccountCreate, AccountRead, UsernameDto, PasswordDto
 from persistence.account import AccountService
 from persistence.session import SessionService
 from api.api import API_PREFIX, get_db
