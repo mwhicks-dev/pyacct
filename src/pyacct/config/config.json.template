@@ -1,6 +1,5 @@
 {
     "sqlalchemy_url" : "dialect+driver://username:password@host:port/database",
-    "port" : 8000,
     "origins" : [
         "http://localhost",
         "https://localhost"
