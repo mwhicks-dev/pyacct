@@ -1,0 +1,7 @@
+{
+    "sqlalchemy_url" : "dialect+driver://username:password@host:port/database",
+    "origins" : [
+        "http://localhost",
+        "https://localhost"
+    ]
+}

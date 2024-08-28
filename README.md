@@ -40,59 +40,39 @@ If you only want to build PyAcct to a package for use in other sofware, just ins
 
 ## Quick start
 
-PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable. Before running, please assign `PYACCT_DATABASE_URL` in the form:
+This guide explains how to deploy PyAcct in your local environment after following the steps in the Installation section.
 
-```
-dialect+driver://username:password@host:port/database
-```
+### Configuration
 
-That is:
+The PyAcct src contains a file `src/pyacct/config/config.json.template`. Make a copy of this in `src/pyacct/config/config.json.template`, and configure it as follows:
+* Set `sqlalchemy_url` to [this format](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) depending on your database and driver.
+* Include in `origins`, as a string, any URI you would like to be able to make requests to PyAcct.
 
-```bash
-export PYACCT_DATABASE_URL="dialect+driver://username:password@host:port/database"
-```
+### Deployment
 
-Once completed, you can run the PyAcct layer using the following command:
+Once completed, you can run the PyAcct layer by navigating to `src/pyacct` and running the following command:
 
 ```bash
-python src/pyacct/main.py
+uvicorn main:app --host 0.0.0.0 --port {your-port}
 ```
 
 See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1) for access information.
 
 ## Usage
 
-The usage is broken into five sections: Prerequisites, Environment Variables, Strategy, Deployment and Extension. Following this is the condensed Docker Usage subsection.
+In this section, we cover the Docker build and deployment of PyAcct.
+
+The usage is broken into five sections: Prerequisites, Configuration, Strategy, Deployment and Extension. Following this is the condensed Docker Usage subsection.
 
 ### Prerequisites
 
 PyAcct does not come with a packaged database; instead, it requires a running relational database for you to connect to. Check [here](https://docs.sqlalchemy.org/en/13/dialects/#included-dialects) for a list of databases that are well-defined for SQLAlchemy, and others that have external adapters.
 
-### Environment Variables
+### Configuration
 
-PyAcct is designed to be configured once and then run as many times as you need it to be, taking advantage of environment variables to do so. Only the `PYACCT_DATABASE_URL` environment variable is required. The other ones can be set if desired, but have defaults in place.
-
-#### `PYACCT_DATABASE_URL`
-
-This environment variable is required to run PyAcct. As the layer does not come with a packaged databse, you must instead configure it to connect to an external (relational) database.
-
-The variable should be assigned the a value specified by SQLAlchemy's [Database URLs](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) format -- that is, 
-
-```
-dialect+driver://username:password@host:port/database
-```
-
-You can find your `dialect` by selecting your database from the options [here](https://docs.sqlalchemy.org/en/13/dialects/). Once you select your database of choice, the URL will read `https://docs.sqlalchemy.org/en/13/dialects/{dialect}.html`.
-
-The `driver` will be whatever database driver you have downloaded among those listed in the DBAPI Support section of `https://docs.sqlalchemy.org/en/13/dialects/{dialect}.html`. One of them is required.
-
-#### `PYACCT_PORT`
-
-This environment variable allows you to specify on what port of the running machine you would like to host the PyAcct REST API. If unset, this will default to `8000`. [Here](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml) is a resource you can use to check what ports are available or not.
-
-Necessary environment variables:
-* `PYACCT_DATABASE_URL`: Set this to the URL of the database you'd like to connect to. This allows for details of the specific database to be removed from pyacct and left to you.
-* `PYACCT_PORT` (Optional): Set this to the port on which you'd like to run the API. If unset, this will default to 8000.
+PyAcct is designed to be configured once and then run as many times as you need it to be, taking advantage of a simple JSON config to do so. The PyAcct src contains a file `src/pyacct/config/config.json.template`. Make a copy of this in `src/pyacct/config/config.json.template`, and configure it as follows:
+* Set `sqlalchemy_url` to [this format](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) depending on your database and driver.
+* Include in `origins`, as a string, any URI you would like to be able to make requests to PyAcct.
 
 ### Strategy
 
@@ -102,10 +82,24 @@ The default validator will deem tokens invalid after they have been unused for a
 
 ### Deployment
 
-Once all of the prerequisites and configuration are satisfied, you can simply run PyAcct with the following command:
+You can use the Dockerfile to build and run this service. Before building, you will need to verify or modify the following arguments:
+* `TARGET`: This will be the branch (or tag) you would like to build to your Docker image (for instance, v1.1.1 or dev). If not modified, this argument defaults to `main`.
+* `DRIVER`: This will be the installed SQLAlchemy driver for your database type. If not modified, this argument defaults to `psycopg2`.
+
+Afterwards, in order to build, execute:
 
 ```bash
-python src/pyacct/main.py
+docker build --no-cache -t pyacct --build-arg TARGET={your-target} --build-arg DRIVER={your-driver} .
+```
+
+If not included, the `TARGET` and `DRIVER` build arguments will default to `main` and `psycopg2` respectively.
+
+Building with `--no-cache` is recommended in order to ensure that the appropriate versions are pulled from `git`.
+
+Once successfully built, you can run your Docker image by:
+
+```bash
+docker run --rm -p {host-pyacct-port}:8000 -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ pyacct
 ```
 
 ### Extension
