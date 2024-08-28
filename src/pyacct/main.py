@@ -1,4 +1,3 @@
-import os
 import json
 
 from pyacct_token_validator import PyacctTokenValidator
@@ -20,8 +19,6 @@ app.include_router(SessionRouter)
 # set configuration variables
 with open("config/config.json", "r") as f:
     config = json.load(f)
-
-os.environ['PYACCT_DATABASE_URL'] = config['sqlalchemy_url']
 
 app.add_middleware(
     CORSMiddleware,
