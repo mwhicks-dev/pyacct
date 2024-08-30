@@ -73,6 +73,7 @@ In your text editor of choice, you can now populate the following thre configura
   * `required`: Set this to `true` if you want to *require* that new accounts have this attribute, and to `false` if you do not. If you change a previously not required attribute to required between PyAcct launches, old accounts will not be penalized. This should instead be handled by the caller.
   * `sensitive`: Set this to `true` if you don't want for this data to be read by anyone, unless the person owning the attribute is the same person making the request. Set this to `false` if you want for anyone to be able to read this attribute by account ID and key. Sensitive details should not also be unique.
   * `unique`: Set this to `true` if you want for this attribute to be unique - that is, only one person at a time can have a specific key-value combination. Set this to false otherwise. Unique details should not also be sensitive.
+* `super`: This list should contain all of the account IDs you would like to be super users (i.e. able to view sensitive data). It is a good idea to only allow other services' accounts, a billing service for instance, to be able to retrieve this data; most of the time, sufficiently important users will have database access to sensitive details anyways. The smaller this list is, the better. 
 
 ### Strategy
 

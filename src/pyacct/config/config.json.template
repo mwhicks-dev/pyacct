@@ -17,5 +17,6 @@
             "sensitive" : false,
             "unique" : false
         }
-    ]
+    ],
+    "super" : [-1, -2, -3]
 }
