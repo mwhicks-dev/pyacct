@@ -40,23 +40,17 @@ If you only want to build PyAcct to a package for use in other sofware, just ins
 
 ## Quick start
 
-This guide explains how to deploy PyAcct in your local environment after following the steps in the Installation section.
+PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable.
 
-### Configuration
+After setting up your database dependency, please follow the steps in **Usage** > **Configuration**.
 
-The PyAcct src contains a file `src/pyacct/config/config.json.template`. Make a copy of this in `src/pyacct/config/config.json.template`, and configure it as follows:
-* Set `sqlalchemy_url` to [this format](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) depending on your database and driver.
-* Include in `origins`, as a string, any URI you would like to be able to make requests to PyAcct.
-
-### Deployment
-
-Once completed, you can run the PyAcct layer by navigating to `src/pyacct` and running the following command:
+Once completed, you can run the PyAcct layer by navigating to `src/pyacct` and using the following command:
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port {your-port}
+python uvicorn main:app
 ```
 
-See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1) for access information.
+See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2) for access information.
 
 ## Usage
 
@@ -69,22 +63,18 @@ The usage is broken into five sections: Prerequisites, Configuration, Strategy, 
 PyAcct does not come with a packaged database; instead, it requires a running relational database for you to connect to. Check [here](https://docs.sqlalchemy.org/en/13/dialects/#included-dialects) for a list of databases that are well-defined for SQLAlchemy, and others that have external adapters.
 
 ### Configuration
+Before running this application, you must first make your own copy of the configuration. Navigate to the `src/pyacct/config/` directory, and make a copy of `config.json.template` titled `config.json`. 
 
-PyAcct is designed to be configured once and then run as many times as you need it to be, taking advantage of a simple JSON config to do so. The PyAcct src contains a file `src/pyacct/config/config.json.template`. Make a copy of this in `src/pyacct/config/config.json.template`, and configure it as follows:
-* Set `sqlalchemy_url` to [this format](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) depending on your database and driver.
-* Include in `origins`, as a string, any URI you would like to be able to make requests to PyAcct.
+In your text editor of choice, you can now populate the following thre configuration sections:
 
-### Strategy
-
-[This file](https://github.com/mwhicks-dev/pyacct/blob/main/util/token_validation.py) contains an interface for token validation, which by default, is implemented by [this file](https://github.com/mwhicks-dev/pyacct/blob/main/pyacct_token_validator.py). If you want to change how token validation works, you should write your own implementation in the top-level directory and have the [main script](https://github.com/mwhicks-dev/pyacct/blob/main/main.py) set `persistence.session.token_validation` to an instance of it instead of to my default one.
-
-The default validator will deem tokens invalid after they have been unused for an hour, or after they have existed for a day.
-
-### Deployment
-
-You can use the Dockerfile to build and run this service. Before building, you will need to verify or modify the following arguments:
-* `TARGET`: This will be the branch (or tag) you would like to build to your Docker image (for instance, v1.1.1 or dev). If not modified, this argument defaults to `main`.
-* `DRIVER`: This will be the installed SQLAlchemy driver for your database type. If not modified, this argument defaults to `psycopg2`.
+* `sqlalchemy_url`: Depending on what database and driver you are planning to use, refactor this string in accoradnace with the [Supported Databases](https://docs.sqlalchemy.org/en/20/core/engines.html#supported-databases) and [Database URLs](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) sections.
+* `origins`: This list should contain all of the address-port combinations you would like to be able to make cross-origin requests to PyAcct. If you are using a web page to access PyAcct's REST API, then you will need to put the address of your web service.
+* `attributes`: This list should contain, in the format provided, all of the attributes (except username and password, which are supported natively) that you want PyAcct to track. You can change this between launches of PyAcct, so don't worry. Here is a description of each of these dictionaries' keys for reference:
+  * `key`: This is the unique identifier of the attribute -- its name.
+  * `required`: Set this to `true` if you want to *require* that new accounts have this attribute, and to `false` if you do not. If you change a previously not required attribute to required between PyAcct launches, old accounts will not be penalized. This should instead be handled by the caller.
+  * `sensitive`: Set this to `true` if you don't want for this data to be read by anyone, unless the person owning the attribute is the same person making the request. Set this to `false` if you want for anyone to be able to read this attribute by account ID and key. Sensitive details should not also be unique.
+  * `unique`: Set this to `true` if you want for this attribute to be unique - that is, only one person at a time can have a specific key-value combination. Set this to false otherwise. Unique details should not also be sensitive.
+* `super`: This list should contain all of the account IDs you would like to be super users (that is, able to query sensitive data through PyAcct). It is a good idea to only allow other services' accounts, a billing service for instance, to be able to retrieve this data; most of the time, sufficiently important users will have database access to sensitive details anyways. The smaller this list is, the better. 
 
 Afterwards, in order to build, execute:
 
@@ -99,14 +89,16 @@ Building with `--no-cache` is recommended in order to ensure that the appropriat
 Once successfully built, you can run your Docker image by:
 
 ```bash
-docker run --rm -p {host-pyacct-port}:8000 -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ pyacct
+uvicorn main:app --host 0.0.0.0 --port {host-pyacct-port}
 ```
+
+If you only want to use PyAcct locally, then instead use `--host 127.0.0.1`.
 
 ### Extension
 
 PyAcct has an API endpoint where you can retrieve the account ID from your auth token -- this is the main method of extension. These ID doesn't change unless the account is deleted, so you can use this as a unique ID/weakly-defined foreign key for tables in your own separate applications. See [service-oriented architecture](https://aws.amazon.com/what-is/service-oriented-architecture/).
 
-A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1).
+A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2).
 
 ### Docker Usage
 
@@ -133,7 +125,7 @@ Use of the `--no-cache` flag is recommended for non-release branches, as Docker 
 Once successfully built, you can run your Docker image by:
 
 ```bash
-docker run --rm -e PYACCT_DATABASE_URL={your-database-url} -p {host-pyacct-port}:8000 pyacct
+docker run --rm -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ -p {host-pyacct-port}:8000 pyacct
 ```
 
 You can detach this process using `-d` if you would like, but testing first without is recommended. If successful, you should be able to access PyAcct via `localhost:{host-pyacct-port}` or remotely through your public IP address `hostaddr` and the port. Try `localhost:{host-pyacct-port}/docs` (or `hostaddr`) to test.

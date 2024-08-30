@@ -1,7 +1,22 @@
 {
-    "sqlalchemy_url" : "dialect+driver://username:password@host:port/database",
+    "sqlalchemy_url" : "database+driver://username:password@host.address:port/dbname",
     "origins" : [
         "http://localhost",
         "https://localhost"
-    ]
+    ],
+    "attributes" : [
+        {
+            "key" : "email",
+            "required" : true,
+            "sensitive" : true,
+            "unique" : true
+        },
+        {
+            "key" : "profile_hex",
+            "required" : true,
+            "sensitive" : false,
+            "unique" : false
+        }
+    ],
+    "super" : [-1, -2, -3]
 }

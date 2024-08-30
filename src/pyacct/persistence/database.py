@@ -4,9 +4,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-with open("config/config.json", "r") as f:
-    config = json.load(f)
-    engine = create_engine(config['sqlalchemy_url'])
+with open("config/config.json", "r") as fp:
+    _config = json.load(fp)
+
+try:
+    DATABASE_URL = _config['sqlalchemy_url']
+except KeyError:
+    raise Exception("Configuration of sqlalchemy_url is required")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
