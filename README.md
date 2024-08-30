@@ -54,14 +54,15 @@ See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2
 
 ## Usage
 
-The usage is broken into five sections: Prerequisites, Environment Variables, Strategy, Deployment and Extension. Following this is the condensed Docker Usage subsection.
+In this section, we cover the Docker build and deployment of PyAcct.
+
+The usage is broken into five sections: Prerequisites, Configuration, Strategy, Deployment and Extension. Following this is the condensed Docker Usage subsection.
 
 ### Prerequisites
 
 PyAcct does not come with a packaged database; instead, it requires a running relational database for you to connect to. Check [here](https://docs.sqlalchemy.org/en/13/dialects/#included-dialects) for a list of databases that are well-defined for SQLAlchemy, and others that have external adapters.
 
 ### Configuration
-
 Before running this application, you must first make your own copy of the configuration. Navigate to the `src/pyacct/config/` directory, and make a copy of `config.json.template` titled `config.json`. 
 
 In your text editor of choice, you can now populate the following thre configuration sections:
@@ -75,15 +76,17 @@ In your text editor of choice, you can now populate the following thre configura
   * `unique`: Set this to `true` if you want for this attribute to be unique - that is, only one person at a time can have a specific key-value combination. Set this to false otherwise. Unique details should not also be sensitive.
 * `super`: This list should contain all of the account IDs you would like to be super users (that is, able to query sensitive data through PyAcct). It is a good idea to only allow other services' accounts, a billing service for instance, to be able to retrieve this data; most of the time, sufficiently important users will have database access to sensitive details anyways. The smaller this list is, the better. 
 
-### Strategy
+Afterwards, in order to build, execute:
 
-[This file](https://github.com/mwhicks-dev/pyacct/blob/main/util/token_validation.py) contains an interface for token validation, which by default, is implemented by [this file](https://github.com/mwhicks-dev/pyacct/blob/main/pyacct_token_validator.py). If you want to change how token validation works, you should write your own implementation in the top-level directory and have the [main script](https://github.com/mwhicks-dev/pyacct/blob/main/main.py) set `persistence.session.token_validation` to an instance of it instead of to my default one.
+```bash
+docker build --no-cache -t pyacct --build-arg TARGET={your-target} --build-arg DRIVER={your-driver} .
+```
 
-The default validator will deem tokens invalid after they have been unused for an hour, or after they have existed for a day.
+If not included, the `TARGET` and `DRIVER` build arguments will default to `main` and `psycopg2` respectively.
 
-### Deployment
+Building with `--no-cache` is recommended in order to ensure that the appropriate versions are pulled from `git`.
 
-Once all of the prerequisites and configuration are satisfied, you can simply run PyAcct with the following command:
+Once successfully built, you can run your Docker image by:
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port {host-pyacct-port}

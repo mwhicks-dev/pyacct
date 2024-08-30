@@ -10,8 +10,6 @@ from api import AccountRouter, SessionRouter
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-PYACCT_PORT = os.environ.get("PYACCT_PORT", 8000)
-
 Base.metadata.create_all(bind=engine)
 
 # create all attributes

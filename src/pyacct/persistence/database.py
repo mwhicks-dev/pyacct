@@ -12,7 +12,6 @@ try:
 except KeyError:
     raise Exception("Configuration of sqlalchemy_url is required")
 
-engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
