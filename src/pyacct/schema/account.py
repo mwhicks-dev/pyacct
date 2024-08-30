@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from .attribute import AttributeDto
+
 class IdDto(BaseModel):
     id: int
 
@@ -11,7 +13,7 @@ class PasswordDto(BaseModel):
     password_confirmation: str
 
 class AccountCreate(UsernameDto, PasswordDto):
-    pass
+    attributes: list[AttributeDto]
 
 class AccountRead(UsernameDto, IdDto):
     pass
