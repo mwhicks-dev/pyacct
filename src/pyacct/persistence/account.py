@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session as SQLSession
 
-from model import Account, Username, Password, AccountSession, Session
+from model import Account, Username, Password, Attribute
 from schema import AccountCreate, AccountRead, UsernameDto, PasswordDto
 from util import PasswordHash
 
@@ -22,6 +22,14 @@ class AccountService:
         db.add(db_password)
         db.commit()
 
+        # store attributes
+        for attribute in account.attributes:
+            db_attribute = Attribute(account_id=db_account.id,
+                                     key=attribute.key,
+                                     value=attribute.value)
+            db.add(db_attribute)
+            db.commit()
+
         return
     
     @staticmethod
@@ -39,6 +47,16 @@ class AccountService:
             return None
 
         return AccountRead(id=account.id, username=account.username)
+    
+    @staticmethod
+    def read_account_by_unique_attribute(db: SQLSession, key: str, value: str) -> AccountRead:
+        attribute = db.query(Attribute).filter(Attribute.key == key).filter(
+            Attribute.value == value).first()
+        
+        if attribute is None:
+            return None
+        
+        return AccountService.read_account(db=db, account_id=attribute.account_id)
     
     @staticmethod
     def read_password(db: SQLSession, account_id: int) -> Password:
@@ -66,5 +84,6 @@ class AccountService:
     def delete_account(db: SQLSession, account_id: int) -> None:
         db.query(Username).filter(Username.id == account_id).delete()
         db.query(Password).filter(Password.id == account_id).delete()
+        db.query(Attribute).filter(Attribute.account_id == account_id).delete()
         db.query(Account).filter(Account.id == account_id).delete()
         db.commit()
