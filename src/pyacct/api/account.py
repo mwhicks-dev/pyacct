@@ -25,6 +25,8 @@ for attribute in _config['attributes']:
     if attribute['required']:
         _required_attributes.add(attribute['key'])
 
+_super = _config.get('super', [])
+
 def _validate_username(dto: UsernameDto, db: Session):
     user = AccountService.read_account_by_username(db=db, username=dto.username)
     if user is not None:

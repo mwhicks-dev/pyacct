@@ -7,7 +7,7 @@ import persistence.session
 from persistence.attribute import AttributeService
 from api import AccountRouter, SessionRouter
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
 PYACCT_PORT = os.environ.get("PYACCT_PORT", 8000)
 
@@ -17,8 +17,7 @@ Base.metadata.create_all(bind=engine)
 with open("config/config.json", "r") as fp:
     config = json.load(fp)
 
-for attribute in config['attributes']:
-    # TODO: User superuser to set
+for attribute in config.get('attributes', []):
     AttributeService.update_attribute(db=SessionLocal(),
         key=attribute['key'],
         required=attribute['required'],

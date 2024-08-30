@@ -7,7 +7,10 @@ from sqlalchemy.orm import sessionmaker
 with open("config/config.json", "r") as fp:
     _config = json.load(fp)
 
-DATABASE_URL = _config['sqlalchemy_url']
+try:
+    DATABASE_URL = _config['sqlalchemy_url']
+except KeyError:
+    raise Exception("Configuration of sqlalchemy_url is required")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
