@@ -85,8 +85,10 @@ The default validator will deem tokens invalid after they have been unused for a
 Once all of the prerequisites and configuration are satisfied, you can simply run PyAcct with the following command:
 
 ```bash
-python src/pyacct/main.py
+uvicorn main:app --host 0.0.0.0 --port {host-pyacct-port}
 ```
+
+If you only want to use PyAcct locally, then instead use `--host 127.0.0.1`.
 
 ### Extension
 
