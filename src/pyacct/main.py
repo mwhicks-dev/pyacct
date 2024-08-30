@@ -4,12 +4,12 @@ import json
 import uvicorn
 
 from pyacct_token_validator import PyacctTokenValidator
-from persistence.database import Base, engine
+from persistence.database import Base, engine, SessionLocal
 import persistence.session
 from persistence.attribute import AttributeService
 from api import AccountRouter, SessionRouter
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 PYACCT_PORT = os.environ.get("PYACCT_PORT", 8000)
 
@@ -20,8 +20,8 @@ with open("config/config.json", "r") as fp:
     config = json.load(fp)
 
 for attribute in config['attributes']:
-    # update attr will create new attribute if existing not found
-    AttributeService.update_attribute(
+    # TODO: User superuser to set
+    AttributeService.update_attribute(db=SessionLocal(),
         key=attribute['key'],
         required=attribute['required'],
         unique=attribute['unique'],

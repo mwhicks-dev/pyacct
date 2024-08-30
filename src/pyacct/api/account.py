@@ -56,19 +56,19 @@ def _read_sensitive_attribute(attribute: str):
 
 def _sensitive(attribute: str) -> bool:
     try:
-        return _attributes['key']['sensitive']
+        return _attributes[attribute]['sensitive']
     except KeyError:
         _no_such_attribute(attribute)
 
 def _unique(attribute: str) -> bool:
     try:
-        return _attributes['key']['unique']
+        return _attributes[attribute]['unique']
     except KeyError:
         _no_such_attribute(attribute)
 
 def _required(attribute: str) -> bool:
     try:
-        return _attributes['key']['required']
+        return _attributes[attribute]['required']
     except KeyError:
         _no_such_attribute(attribute)
 
@@ -78,14 +78,25 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
     _validate_password(db=db, dto=dto)
 
     # Validate that all required attributes are hit
-    attributes_needed: set[str] = copy(_required_attributes)
+    attributes_needed: set[str] = copy.copy(_required_attributes)
+    unique_attributes: list[AttributeDto] = []
     for attribute in dto.attributes:
         attributes_needed.remove(attribute.key)
+        if _unique(attribute.key):
+            unique_attributes.append(attribute)
+
     if len(attributes_needed) > 0:
         missing = ''
         for missing_attribute in attributes_needed:
             missing += f"{missing_attribute} "
         raise HTTPException(status_code=400, detail=f"Attributes {missing}are required")
+    
+    # Validate that all unique attributes are unique
+    for attribute in unique_attributes:
+        account = AccountService.read_account_by_unique_attribute(
+            db=db, key=attribute.key, value=attribute.value)
+        if account is not None:
+            raise HTTPException(status_code=409, detail=f"{attribute.key.capitalize()} '{attribute.value}' already in use.")
 
     AccountService.create_account(db=db, account=dto)
 
@@ -127,7 +138,7 @@ def read_account_attribute(account_id: int, attribute: str, db: Session = Depend
     if _sensitive(attribute):
         _read_sensitive_attribute(attribute)
 
-    db_attribute = AttributeService.read_account_attribute(db=db, account_id=account_id, attribute=attribute)
+    db_attribute = AttributeService.read_account_attribute(db=db, account_id=account_id, key=attribute)
     if db_attribute is None:
         raise HTTPException(status_code=404, detail="No match found")
     
