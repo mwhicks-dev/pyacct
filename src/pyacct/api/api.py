@@ -2,7 +2,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from persistence.database import SessionLocal
 
-API_PREFIX = "/pyacct/1"
+API_PREFIX = "/pyacct/2"
 
 def get_db():
     db = SessionLocal()
