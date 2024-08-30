@@ -3,5 +3,19 @@
     "origins" : [
         "http://localhost",
         "https://localhost"
+    ],
+    "attributes" : [
+        {
+            "key" : "email",
+            "required" : true,
+            "sensitive" : true,
+            "unique" : true
+        },
+        {
+            "key" : "profile_hex",
+            "required" : true,
+            "sensitive" : false,
+            "unique" : false
+        }
     ]
 }
