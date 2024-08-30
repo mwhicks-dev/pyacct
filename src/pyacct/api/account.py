@@ -113,11 +113,11 @@ def read_account_by_unique_attribute(key: str, value: str, db: Session = Depends
     if not _unique(key):
         raise HTTPException(status_code=400, detail=f"Cannot read account by non-unique attribute '{key}'")
 
-    db_account = AttributeService.read_unique_account_attribute(db=db, key=key, value=value)  # TODO: Implement
-    if db_account is None:
+    account = AccountService.read_account_by_unique_attribute(db=db, key=key, value=value)
+    if account is None:
         raise HTTPException(status_code=404, detail="No such account")
     
-    return db_account
+    return account
 
 @router.get("/account/{account_id}/{attribute}", response_model=AttributeDto)
 def read_account_attribute(account_id: int, attribute: str, db: Session = Depends(get_db), token: str | None = Header(default=None)):
@@ -155,7 +155,7 @@ def update_attribute(dto: AttributeDto, db: Session = Depends(get_db), token: st
     account = SessionService.read_session_bearer(db=db, session_id=token)
 
     # Verify that required attribute is not being unset
-    if dto.value is None and _required(dto.key):  # TODO: Allow optional value schema
+    if dto.value is None and _required(dto.key):
         raise HTTPException(status_code=400, detail=f"Cannot unset required attribute {dto.key}")
 
     AttributeService.update_account_attribute(account_id=account.id, attribute=dto)
