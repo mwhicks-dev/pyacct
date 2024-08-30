@@ -1,8 +1,6 @@
 import os
 import json
 
-import uvicorn
-
 from pyacct_token_validator import PyacctTokenValidator
 from persistence.database import Base, engine, SessionLocal
 import persistence.session
@@ -33,9 +31,3 @@ persistence.session.token_validation = PyacctTokenValidator()
 app = FastAPI()
 app.include_router(AccountRouter)
 app.include_router(SessionRouter)
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", 
-                host="0.0.0.0", 
-                port=PYACCT_PORT, 
-                reload=True)

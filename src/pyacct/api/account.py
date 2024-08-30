@@ -1,8 +1,6 @@
 import json
 import copy
 
-from typing import Any
-
 from fastapi import APIRouter, Header, Depends, HTTPException
 
 from sqlalchemy.orm import Session
@@ -136,7 +134,9 @@ def read_account_attribute(account_id: int, attribute: str, db: Session = Depend
 
     # Check that attribute is not sensitive
     if _sensitive(attribute):
-        _read_sensitive_attribute(attribute)
+        account = read_account(token=token, db=db)
+        if account.id != account_id:
+            _read_sensitive_attribute(attribute)
 
     db_attribute = AttributeService.read_account_attribute(db=db, account_id=account_id, key=attribute)
     if db_attribute is None:

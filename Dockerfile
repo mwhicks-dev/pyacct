@@ -12,4 +12,4 @@ RUN pip install -r src/requirements.txt
 RUN pip install ${DRIVER}
 
 WORKDIR /pyacct/src/pyacct
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "4"]

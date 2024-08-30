@@ -40,25 +40,17 @@ If you only want to build PyAcct to a package for use in other sofware, just ins
 
 ## Quick start
 
-PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable. Before running, please assign `PYACCT_DATABASE_URL` in the form:
+PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable.
 
-```
-dialect+driver://username:password@host:port/database
-```
+After setting up your database dependency, please follow the steps in **Usage** > **Configuration**.
 
-That is:
+Once completed, you can run the PyAcct layer by navigating to `src/pyacct` and using the following command:
 
 ```bash
-export PYACCT_DATABASE_URL="dialect+driver://username:password@host:port/database"
+python uvicorn main:app
 ```
 
-Once completed, you can run the PyAcct layer using the following command:
-
-```bash
-python src/pyacct/main.py
-```
-
-See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1) for access information.
+See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2) for access information.
 
 ## Usage
 
@@ -68,31 +60,19 @@ The usage is broken into five sections: Prerequisites, Environment Variables, St
 
 PyAcct does not come with a packaged database; instead, it requires a running relational database for you to connect to. Check [here](https://docs.sqlalchemy.org/en/13/dialects/#included-dialects) for a list of databases that are well-defined for SQLAlchemy, and others that have external adapters.
 
-### Environment Variables
+### Configuration
 
-PyAcct is designed to be configured once and then run as many times as you need it to be, taking advantage of environment variables to do so. Only the `PYACCT_DATABASE_URL` environment variable is required. The other ones can be set if desired, but have defaults in place.
+Before running this application, you must first make your own copy of the configuration. Navigate to the `src/pyacct/config/` directory, and make a copy of `config.json.template` titled `config.json`. 
 
-#### `PYACCT_DATABASE_URL`
+In your text editor of choice, you can now populate the following thre configuration sections:
 
-This environment variable is required to run PyAcct. As the layer does not come with a packaged databse, you must instead configure it to connect to an external (relational) database.
-
-The variable should be assigned the a value specified by SQLAlchemy's [Database URLs](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) format -- that is, 
-
-```
-dialect+driver://username:password@host:port/database
-```
-
-You can find your `dialect` by selecting your database from the options [here](https://docs.sqlalchemy.org/en/13/dialects/). Once you select your database of choice, the URL will read `https://docs.sqlalchemy.org/en/13/dialects/{dialect}.html`.
-
-The `driver` will be whatever database driver you have downloaded among those listed in the DBAPI Support section of `https://docs.sqlalchemy.org/en/13/dialects/{dialect}.html`. One of them is required.
-
-#### `PYACCT_PORT`
-
-This environment variable allows you to specify on what port of the running machine you would like to host the PyAcct REST API. If unset, this will default to `8000`. [Here](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml) is a resource you can use to check what ports are available or not.
-
-Necessary environment variables:
-* `PYACCT_DATABASE_URL`: Set this to the URL of the database you'd like to connect to. This allows for details of the specific database to be removed from pyacct and left to you.
-* `PYACCT_PORT` (Optional): Set this to the port on which you'd like to run the API. If unset, this will default to 8000.
+* `sqlalchemy_url`: Depending on what database and driver you are planning to use, refactor this string in accoradnace with the [Supported Databases](https://docs.sqlalchemy.org/en/20/core/engines.html#supported-databases) and [Database URLs](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) sections.
+* `origins`: This list should contain all of the address-port combinations you would like to be able to make cross-origin requests to PyAcct. If you are using a web page to access PyAcct's REST API, then you will need to put the address of your web service.
+* `attributes`: This list should contain, in the format provided, all of the attributes (except username and password, which are supported natively) that you want PyAcct to track. You can change this between launches of PyAcct, so don't worry. Here is a description of each of these dictionaries' keys for reference:
+  * `key`: This is the unique identifier of the attribute -- its name.
+  * `required`: Set this to `true` if you want to *require* that new accounts have this attribute, and to `false` if you do not. If you change a previously not required attribute to required between PyAcct launches, old accounts will not be penalized. This should instead be handled by the caller.
+  * `sensitive`: Set this to `true` if you don't want for this data to be read by anyone, unless the person owning the attribute is the same person making the request. Set this to `false` if you want for anyone to be able to read this attribute by account ID and key. Sensitive details should not also be unique.
+  * `unique`: Set this to `true` if you want for this attribute to be unique - that is, only one person at a time can have a specific key-value combination. Set this to false otherwise. Unique details should not also be sensitive.
 
 ### Strategy
 
@@ -112,7 +92,7 @@ python src/pyacct/main.py
 
 PyAcct has an API endpoint where you can retrieve the account ID from your auth token -- this is the main method of extension. These ID doesn't change unless the account is deleted, so you can use this as a unique ID/weakly-defined foreign key for tables in your own separate applications. See [service-oriented architecture](https://aws.amazon.com/what-is/service-oriented-architecture/).
 
-A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v1).
+A detailed outline of the API endpoints this software serves can be found [here](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2).
 
 ### Docker Usage
 
