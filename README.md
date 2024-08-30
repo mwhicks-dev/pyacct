@@ -139,7 +139,7 @@ Use of the `--no-cache` flag is recommended for non-release branches, as Docker 
 Once successfully built, you can run your Docker image by:
 
 ```bash
-docker run --rm -e PYACCT_DATABASE_URL={your-database-url} -p {host-pyacct-port}:8000 pyacct
+docker run --rm -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ -p {host-pyacct-port}:8000 pyacct
 ```
 
 You can detach this process using `-d` if you would like, but testing first without is recommended. If successful, you should be able to access PyAcct via `localhost:{host-pyacct-port}` or remotely through your public IP address `hostaddr` and the port. Try `localhost:{host-pyacct-port}/docs` (or `hostaddr`) to test.
