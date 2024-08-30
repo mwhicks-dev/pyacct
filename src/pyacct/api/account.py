@@ -137,7 +137,7 @@ def read_account_attribute(account_id: int, attribute: str, db: Session = Depend
     # Check that attribute is not sensitive
     if _sensitive(attribute):
         account = read_account(token=token, db=db)
-        if account_id not in _super and account.id != account_id:
+        if account.id not in _super and account.id != account_id:
             _read_sensitive_attribute(attribute)
 
     db_attribute = AttributeService.read_account_attribute(db=db, account_id=account_id, key=attribute)
