@@ -8,6 +8,7 @@ from persistence.attribute import AttributeService
 from api import AccountRouter, SessionRouter
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 PYACCT_PORT = os.environ.get("PYACCT_PORT", 8000)
 
@@ -30,3 +31,11 @@ persistence.session.token_validation = PyacctTokenValidator()
 app = FastAPI()
 app.include_router(AccountRouter)
 app.include_router(SessionRouter)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=config['origins'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
