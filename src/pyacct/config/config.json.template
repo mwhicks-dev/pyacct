@@ -18,5 +18,6 @@
             "unique" : false
         }
     ],
-    "super" : [-1, -2, -3]
+    "super" : [-1, -2, -3],
+    "generate_docs" : true
 }

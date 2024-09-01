@@ -42,7 +42,7 @@ If you only want to build PyAcct to a package for use in other sofware, just ins
 
 PyAcct does not come packaged with a database of its own. Instead, you must configure your database using an environment variable.
 
-After setting up your database dependency, please follow the steps in **Usage** > **Configuration**.
+After setting up your database dependency, follow the steps in **Usage** > **Configuration**.
 
 Once completed, you can run the PyAcct layer by navigating to `src/pyacct` and using the following command:
 
@@ -51,6 +51,8 @@ python uvicorn main:app
 ```
 
 See the [REST API docs](https://github.com/mwhicks-dev/pyacct/wiki/PyAcct-API-v2) for access information.
+
+This application follows The OpenAPI standards. When running on `${host}:${port}`, you can `GET` this application's OpenAPI specification at `${host}:${port}/openapi.json`.
 
 ## Usage
 
@@ -74,25 +76,18 @@ In your text editor of choice, you can now populate the following thre configura
   * `required`: Set this to `true` if you want to *require* that new accounts have this attribute, and to `false` if you do not. If you change a previously not required attribute to required between PyAcct launches, old accounts will not be penalized. This should instead be handled by the caller.
   * `sensitive`: Set this to `true` if you don't want for this data to be read by anyone, unless the person owning the attribute is the same person making the request. Set this to `false` if you want for anyone to be able to read this attribute by account ID and key. Sensitive details should not also be unique.
   * `unique`: Set this to `true` if you want for this attribute to be unique - that is, only one person at a time can have a specific key-value combination. Set this to false otherwise. Unique details should not also be sensitive.
-* `super`: This list should contain all of the account IDs you would like to be super users (that is, able to query sensitive data through PyAcct). It is a good idea to only allow other services' accounts, a billing service for instance, to be able to retrieve this data; most of the time, sufficiently important users will have database access to sensitive details anyways. The smaller this list is, the better. 
+* `super`: This list should contain all of the account IDs you would like to be super users (that is, able to query sensitive data through PyAcct). It is a good idea to only allow other services' accounts, a billing service for instance, to be able to retrieve this data; most of the time, sufficiently important users will have database access to sensitive details anyways. The smaller this list is, the better.
+* `generate_docs`: Set this to `true` if you want API docpages to be generated and hosted at "/docs". Set this to `false` if you do not want docpages to be generated.
 
-Afterwards, in order to build, execute:
-
-```bash
-docker build --no-cache -t pyacct --build-arg TARGET={your-target} --build-arg DRIVER={your-driver} .
-```
-
-If not included, the `TARGET` and `DRIVER` build arguments will default to `main` and `psycopg2` respectively.
-
-Building with `--no-cache` is recommended in order to ensure that the appropriate versions are pulled from `git`.
-
-Once successfully built, you can run your Docker image by:
+Afterwards, in order to run, execute:
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port {host-pyacct-port}
 ```
 
 If you only want to use PyAcct locally, then instead use `--host 127.0.0.1`.
+
+If you would like to change the number of asynchronous worker threads, append `--workers {interger-no-workers}` to the Uvicorn command.
 
 ### Extension
 
@@ -129,6 +124,8 @@ docker run --rm -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ -p {hos
 ```
 
 You can detach this process using `-d` if you would like, but testing first without is recommended. If successful, you should be able to access PyAcct via `localhost:{host-pyacct-port}` or remotely through your public IP address `hostaddr` and the port. Try `localhost:{host-pyacct-port}/docs` (or `hostaddr`) to test.
+
+The number of asynchronous workers can be specified using an environment variable during runtime. Prepend `-e WORKERS=n`, where `n` is the number of workers you would like to run, to your `docker run` arguments if you would like to change this from the default of `1`.
 
 ## Known issues and limitations
 

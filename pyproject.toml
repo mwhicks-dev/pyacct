@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyacct"
-version = "2.0.1"
+version = "2.1.0"
 authors = [
   { name="Mason", email="mason@hicksm.dev" },
 ]
-description = "Python API components used for keeping track of end user accounts."
+description = "Python API components used for keeping track of end user accounts/profiles."
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
