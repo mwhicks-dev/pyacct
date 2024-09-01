@@ -86,7 +86,7 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
         if attribute.key not in _attributes.keys() or attribute.key in visited:
             continue
         visited.add(attribute.key)
-        if attribute in attributes_needed:
+        if attribute.key in attributes_needed:
             attributes_needed.remove(attribute.key)
         if _unique(attribute.key):
             unique_attributes.append(attribute)
