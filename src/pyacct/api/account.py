@@ -78,12 +78,19 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
     _validate_password(db=db, dto=dto)
 
     # Validate that all required attributes are hit
+    processed: list[AttributeDto] = []
+    visited: set[str] = set()
     attributes_needed: set[str] = copy.copy(_required_attributes)
     unique_attributes: list[AttributeDto] = []
     for attribute in dto.attributes:
-        attributes_needed.remove(attribute.key)
+        if attribute.key not in _attributes.keys() or attribute.key in visited:
+            continue
+        visited.add(attribute.key)
+        if attribute in attributes_needed:
+            attributes_needed.remove(attribute.key)
         if _unique(attribute.key):
             unique_attributes.append(attribute)
+        processed.append(attribute)
 
     if len(attributes_needed) > 0:
         missing = ''
@@ -97,6 +104,7 @@ def create_account(dto: AccountCreate, db: Session = Depends(get_db)):
             db=db, key=attribute.key, value=attribute.value)
         if account is not None:
             raise HTTPException(status_code=409, detail=f"{attribute.key.capitalize()} '{attribute.value}' already in use.")
+    dto.attributes = processed
 
     AccountService.create_account(db=db, account=dto)
 
@@ -171,7 +179,7 @@ def update_attribute(dto: AttributeDto, db: Session = Depends(get_db), token: st
     if dto.value is None and _required(dto.key):
         raise HTTPException(status_code=400, detail=f"Cannot unset required attribute {dto.key}")
 
-    AttributeService.update_account_attribute(account_id=account.id, attribute=dto)
+    AttributeService.update_account_attribute(db=db, account_id=account.id, attribute=dto)
 
 @router.delete("/")
 def delete_account(db: Session = Depends(get_db), token: str | None = Header(default=None)):
