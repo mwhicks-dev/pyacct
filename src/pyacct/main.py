@@ -1,4 +1,4 @@
-import os
+from typing import Any
 import json
 
 from pyacct_token_validator import PyacctTokenValidator
@@ -14,7 +14,7 @@ Base.metadata.create_all(bind=engine)
 
 # create all attributes
 with open("config/config.json", "r") as fp:
-    config = json.load(fp)
+    config: dict[str, Any] = json.load(fp)
 
 for attribute in config.get('attributes', []):
     AttributeService.update_attribute(db=SessionLocal(),
@@ -25,8 +25,10 @@ for attribute in config.get('attributes', []):
     )
 
 persistence.session.token_validation = PyacctTokenValidator()
-
-app = FastAPI()
+if config.get('generate_docs', False):
+    app = FastAPI()
+else:
+    app = FastAPI(docs_url=None, redoc_url=None)
 app.include_router(AccountRouter)
 app.include_router(SessionRouter)
 
