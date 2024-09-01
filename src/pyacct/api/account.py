@@ -175,6 +175,10 @@ def update_attribute(dto: AttributeDto, db: Session = Depends(get_db), token: st
     _validate_token(token=token, db=db)
     account = SessionService.read_session_bearer(db=db, session_id=token)
 
+    # Verify that attribute actually exists
+    if dto.key not in _attributes.keys():
+        raise HTTPException(status_code=404, detail=f"No such attribute {dto.key}")
+
     # Verify that required attribute is not being unset
     if dto.value is None and _required(dto.key):
         raise HTTPException(status_code=400, detail=f"Cannot unset required attribute {dto.key}")
