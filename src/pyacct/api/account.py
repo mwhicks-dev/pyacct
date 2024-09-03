@@ -115,12 +115,12 @@ def read_account(db: Session = Depends(get_db), token: str | None = Header(defau
     SessionService.update_session(db=db, session_id=token)
     return db_account
 
-@router.get("/account/{username}", response_model=AccountRead)
+@router.get("/{username}", response_model=AccountRead)
 def read_account_by_username(username: str, db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
     return AccountService.read_account_by_username(db=db, username=username)
 
-@router.get("/account/attribute/{key}/{value}", response_model=AccountRead)
+@router.get("/attribute/{key}/{value}", response_model=AccountRead)
 def read_account_by_unique_attribute(key: str, value: str, db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
 
@@ -138,7 +138,7 @@ def read_account_by_unique_attribute(key: str, value: str, db: Session = Depends
     
     return account
 
-@router.get("/account/{account_id}/{attribute}", response_model=AttributeDto)
+@router.get("/{account_id}/{attribute}", response_model=AttributeDto)
 def read_account_attribute(account_id: int, attribute: str, db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
 
@@ -170,7 +170,7 @@ def update_password(dto: PasswordDto, db: Session = Depends(get_db), token: str 
     AccountService.update_password(db=db, account_id=account.id, dto=dto)
     SessionService.update_session(db=db, session_id=token)
 
-@router.put("/account/attribute")
+@router.put("/attribute")
 def update_attribute(dto: AttributeDto, db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
     account = SessionService.read_session_bearer(db=db, session_id=token)
