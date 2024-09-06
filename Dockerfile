@@ -2,9 +2,8 @@ FROM python:3.10-bookworm
 ARG TARGET=main
 ARG DRIVER=psycopg2
 
-ENV WORKERS=1
-
 RUN apt install git -y
+RUN mkdir /cert
 
 RUN git clone https://github.com/mwhicks-dev/pyacct
 
@@ -14,4 +13,4 @@ RUN pip install -r src/requirements.txt
 RUN pip install ${DRIVER}
 
 WORKDIR /pyacct/src/pyacct
-ENTRYPOINT uvicorn main:app --host 0.0.0.0 --port 8000 --workers $WORKERS
+ENTRYPOINT uvicorn main:app --host 0.0.0.0

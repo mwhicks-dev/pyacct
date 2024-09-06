@@ -120,8 +120,24 @@ Use of the `--no-cache` flag is recommended for non-release branches, as Docker 
 Once successfully built, you can run your Docker image by:
 
 ```bash
-docker run --rm -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ -p {host-pyacct-port}:8000 pyacct
+docker run --rm \
+    -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ \
+    -p {host-pyacct-port}:{container-port} \
+    pyacct --port {container-port} --workers {number-async-workers}
 ```
+
+In the Docker image, a directory `cert` is available for you to provide your SSL info. To deploy with SSL enabled, instead run:
+
+```bash
+docker run --rm \
+    -v /$(pwd)/src/pyacct/config/:/pyacct/src/pyacct/config/ \
+    -v /path/to/cert/readable/:/cert/ \
+    -p {host-pyacct-port}:{container-port} \
+    pyacct --port {container-port} --workers {number-async-workers} \
+    --ssl-certfile /cert/cert.pem --ssl-keyfile /cert/privkey.pem --ssl-keyfile-password {your-kf-password}
+```
+
+You may need to copy your existing certs into a new container so that the Docker image has permission to read them. Make sure these are not accessible to the web!
 
 You can detach this process using `-d` if you would like, but testing first without is recommended. If successful, you should be able to access PyAcct via `localhost:{host-pyacct-port}` or remotely through your public IP address `hostaddr` and the port. Try `localhost:{host-pyacct-port}/docs` (or `hostaddr`) to test.
 
