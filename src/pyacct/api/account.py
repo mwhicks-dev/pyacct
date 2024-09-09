@@ -154,6 +154,13 @@ def read_account_attribute(account_id: int, attribute: str, db: Session = Depend
     
     return db_attribute
 
+@router.get("/super")
+def is_user_super(db: Session = Depends(get_db), token: str | None = Header(default=None)):
+    _validate_token(token=token, db=db)
+
+    account: AccountRead = read_account(db=db, token=token)
+    return account.id in _super
+
 @router.put("/username")
 def update_username(dto: UsernameDto, db: Session = Depends(get_db), token: str | None = Header(default=None)):
     _validate_token(token=token, db=db)
